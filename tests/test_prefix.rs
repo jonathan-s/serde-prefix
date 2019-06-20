@@ -13,7 +13,7 @@ struct Point {
 }
 
 #[prefix_all("test_")]
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 enum TestEnum {
     Hello,
     Point {x: i32, y: i32}
@@ -29,7 +29,6 @@ fn test_prefix_struct() {
 
 #[test]
 fn test_enum() {
-    // do we want to prefix all fields? don't prefix point in this case
     let serialized = serde_json::to_string(&TestEnum::Point {x:1, y:1}).unwrap();
     let json = r#"{"test_Point":{"x":1,"y":1}}"#;
     assert_eq!(serialized, json);
