@@ -15,31 +15,7 @@ use syn::{
     parse_quote
 };
 use proc_macro::{TokenStream};
-use quote::__rt::TokenTree as QuoteToken;
 
-
-fn check_attributes(attrs: &Vec<Attribute>) {
-    let tokens: Vec<_> = attrs.iter()
-        .flat_map(|attr| attr.tts.clone().into_iter())
-        .map(|tree| match tree {
-            QuoteToken::Group(g) => g.stream(),
-            _ => panic!("The token tree contains no group")
-        })
-        .flat_map(|tokenstream| tokenstream.clone().into_iter())
-        .filter_map(|tree| match tree {
-            QuoteToken::Ident(i) => Some(i),
-            _ => None
-        })
-        .filter(|ident|
-            ident.to_string() == "Serialize".to_string()
-            || ident.to_string() == "Deserialize".to_string()
-        )
-        .collect();
-
-    if tokens.len() == 0 {
-        panic!("You need to derive from serde to use the macro prefix_all");
-    }
-}
 
 fn create_attribute(prefix: &str, field_name: &str) -> Attribute {
     let attr_prefix = format!("{}{}", prefix, field_name);
@@ -47,10 +23,7 @@ fn create_attribute(prefix: &str, field_name: &str) -> Attribute {
     attr
 }
 
-
 fn handle_enum(token:  &mut ItemEnum, prefix: &str) -> TokenStream {
-    let cloned = token.clone();
-    check_attributes(&cloned.attrs);
 
     let variants = &mut token.variants;
     for variant in variants.iter_mut() {
@@ -63,11 +36,7 @@ fn handle_enum(token:  &mut ItemEnum, prefix: &str) -> TokenStream {
 }
 
 
-
 fn handle_struct(token: &mut ItemStruct, prefix: &str) -> TokenStream {
-
-    let cloned = token.clone();
-    check_attributes(&cloned.attrs);
 
     let fields = &mut token.fields;
     for field in fields.iter_mut() {
