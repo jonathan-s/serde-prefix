@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jonathan-s/serde-prefix.svg?branch=master)](https://travis-ci.org/jonathan-s/serde-prefix)
+
 # Serde Prefix
 
 A small extension to serde that will allow you to use the macro `#[prefix_all("myprefix_")`. The macro will prefix each attribute in a struct or enum with the prefix of your choice. 
