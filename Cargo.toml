@@ -3,6 +3,12 @@ name = "serde_prefix"
 version = "0.1.0"
 authors = ["Jonathan Sundqvist <jonathan@argpar.se>"]
 edition = "2018"
+description = "A macro for usage with serde to prefix all attributes in structs and enum"
+keywords ["serde"]
+license = "MIT"
+homepage = "https://github.com/jonathan-s/serde-prefix"
+repository = "https://github.com/jonathan-s/serde-prefix"
+readme = "readme.md"
 
 [lib]
 proc-macro = true
