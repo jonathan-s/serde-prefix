@@ -1,4 +1,10 @@
-[![Build Status](https://travis-ci.org/jonathan-s/serde-prefix.svg?branch=master)](https://travis-ci.org/jonathan-s/serde-prefix)
+[![Build Status]][travis] [![Latest Version]][crates.io]
+
+[Build Status]: https://travis-ci.org/jonathan-s/serde-prefix.svg?branch=master
+[travis]: https://travis-ci.org/jonathan-s/serde-prefix
+
+[Latest Version]: https://img.shields.io/crates/v/serde_prefix.svg
+[crates.io]: https://crates.io/crates/serde_prefix
 
 # Serde Prefix
 
