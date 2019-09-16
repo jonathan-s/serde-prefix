@@ -2,61 +2,41 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use quote::ToTokens;
-use syn::{parse_macro_input, parse_quote, Attribute, AttributeArgs, Item, ItemEnum, ItemStruct};
+use syn::{
+    parse_macro_input, parse_quote, Attribute, Data, DataEnum, DataStruct, DeriveInput, LitStr,
+};
 
 fn create_attribute(prefix: &str, field_name: &str) -> Attribute {
-    let attr_prefix = format!("{}{}", prefix, field_name);
-    let attr: Attribute = parse_quote! { #[serde(rename = #attr_prefix)] };
-    attr
+    let serde_name = format!("{}{}", prefix, field_name);
+    parse_quote! {
+        #[serde(rename = #serde_name)]
+    }
 }
 
-fn handle_enum(token: &mut ItemEnum, prefix: &str) -> TokenStream {
-    let variants = &mut token.variants;
-    for variant in variants.iter_mut() {
-        let field_name = variant.ident.to_string();
-        let attr = create_attribute(prefix, &field_name[..]);
-        variant.attrs = vec![attr];
+fn prefix_all_struct(input: &mut DataStruct, prefix: &str) {
+    for field in &mut input.fields {
+        let field_name = field.ident.to_token_stream().to_string();
+        field.attrs.push(create_attribute(prefix, &field_name));
     }
-
-    TokenStream::from(token.into_token_stream())
 }
 
-fn handle_struct(token: &mut ItemStruct, prefix: &str) -> TokenStream {
-    let fields = &mut token.fields;
-    for field in fields.iter_mut() {
-        let field_name = field.ident.as_ref().unwrap().to_string();
-        let attr = create_attribute(prefix, &field_name[..]);
-        field.attrs = vec![attr];
+fn prefix_all_enum(input: &mut DataEnum, prefix: &str) {
+    for variant in &mut input.variants {
+        let variant_name = variant.ident.to_string();
+        variant.attrs.push(create_attribute(prefix, &variant_name));
     }
-
-    TokenStream::from(token.into_token_stream())
 }
 
 #[proc_macro_attribute]
-pub fn prefix_all(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let attr_args: Vec<_> = parse_macro_input!(attr as AttributeArgs);
-    if attr_args.len() != 1 {
-        panic!("prefix_all needs one attribute; the prefix");
+pub fn prefix_all(args: TokenStream, input: TokenStream) -> TokenStream {
+    let prefix = parse_macro_input!(args as LitStr).value();
+    let mut input = parse_macro_input!(input as DeriveInput);
+
+    match &mut input.data {
+        Data::Struct(data) => prefix_all_struct(data, &prefix),
+        Data::Enum(data) => prefix_all_enum(data, &prefix),
+        Data::Union(_) => panic!("prefix_all does not support unions"),
     }
-    let prefix = Some(&attr_args[0]);
-    let prefix = prefix
-        .map(|meta| match meta {
-            syn::NestedMeta::Literal(lit) => lit,
-            _ => panic!("The attribute is not a string"),
-        })
-        .map(|lit| match lit {
-            syn::Lit::Str(string) => string,
-            _ => panic!("The attribute is not a string"),
-        })
-        .unwrap()
-        .value();
 
-    let mut input = parse_macro_input!(item as Item);
-    let tokenstream = match input {
-        Item::Enum(ref mut item_enum) => handle_enum(item_enum, &prefix[..]),
-        Item::Struct(ref mut item_struct) => handle_struct(item_struct, &prefix[..]),
-        _ => panic!("You can't use the macro on this type"),
-    };
-
-    tokenstream
+    input.into_token_stream().into()
 }
