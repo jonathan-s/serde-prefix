@@ -14,7 +14,9 @@ readme = "readme.md"
 proc-macro = true
 
 [dependencies]
-serde = { version = "^1", features = ["derive"] }
-serde_json = "^1"
 syn = "^1"
 quote = "^1"
+
+[dev-dependencies]
+serde = { version = "^1", features = ["derive"] }
+serde_json = "^1"
