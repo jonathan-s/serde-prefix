@@ -1,9 +1,5 @@
-#[macro_use]
-extern crate serde_prefix;
-extern crate serde;
-
 use serde::{Serialize, Deserialize};
-
+use serde_prefix::prefix_all;
 
 #[prefix_all("test_")]
 #[derive(Serialize, Deserialize, Debug)]

@@ -1,7 +1,4 @@
 extern crate proc_macro;
-#[macro_use]
-extern crate syn;
-extern crate quote;
 
 use quote::ToTokens;
 use syn::{
@@ -10,6 +7,7 @@ use syn::{
     ItemStruct,
     ItemEnum,
     Attribute,
+    parse_macro_input,
     parse_quote
 };
 use proc_macro::{TokenStream};
