@@ -56,7 +56,7 @@ pub fn prefix_all(attr: TokenStream, item: TokenStream) -> TokenStream {
     }
     let prefix = Some(&attr_args[0]);
     let prefix = prefix.map(|meta| match meta {
-            syn::NestedMeta::Literal(lit) => lit,
+            syn::NestedMeta::Lit(lit) => lit,
             _ => panic!("The attribute is not a string")
         })
         .map(|lit| match lit {
